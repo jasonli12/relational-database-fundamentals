@@ -1,0 +1,95 @@
+1. What data types do each of these values represent?
+
+"A Clockwork Orange" - string
+42 - integer
+09/02/1945 - date
+98.7 - float
+$15.99 - float
+
+2. Explain in your own words when a database might be used. Explain when a text file might be used.
+
+You will want to use a database when you have multiple users adding new data, retrieving, updating and/or removing data. Also, databases can support complex queries and in general can be accessed using SQL. With a text file, you are required to know how the data is structured in your file in order to read or write to it. Text files might be used when you are dealing with a single user, one at a time write access and simpler data structures.
+
+3. Describe one difference between SQL and other programming languages.
+
+SQL is a declarative language rather than a procedural language. We provide the commands on what data subset we want and the database determines the most efficient way to retrieve the data. With programming languages, we are dealing with things like space and time tradeoffs, complexities and how to optimize code to perform a certain task. We have to provide the how and the what with programming languages.
+
+4. In your own words, explain how the pieces of a database system fit together at a high level.
+
+A database is an application that lets users manage data through an interface. Users have the ability to create, read, update and delete data. Databases store data in a binary file format and have specialized structures that allow the database system to quickly retrieve and make updates. Data is stored in tables in databases.
+
+5. Explain the meaning of table, row, column, and value.
+
+A table contains rows and columns for the specific data it houses. In a company database, we may have a Customers table and a Products table.
+
+Each row represents a specific data entry or instance. For example, we may have a users table and each row represents a unique user.
+
+Each column represents a specific data attribute. For example, we may have a users table with a column for name, a column for email address, a column for age, a column for phone number, etc.
+
+A value represents a specific data attribute for a specific instance or entry. In a table, it is the interaction of a row and column. For example, in a users table, we may have an entry to Joe Smith. The row for Joe Smith will contain all the data attributes for the user. One value may be Joe Smith's email address, such as joesmith@gmail.com.
+
+6. List 3 data types that can be used in a table.
+
+Three data types that can be used in a table are string, integer and float.
+
+
+7. Given this payments table, provide an English description of the following queries and include their results:
+
+SELECT date, amount
+FROM payments;
+
+Retrieve the date and amount columns from the payments table.
+
+date	      amount
+2016-05-01	1500
+2016-05-10	37
+2016-05-15	124.93
+2016-05-23	54.72
+
+SELECT amount
+FROM payments
+WHERE amount > 500;
+
+Retrieve the amount column from the payment tables and only include entries where the amount is greater than 500.
+
+amount
+1500
+
+SELECT *
+FROM payments
+WHERE payee = 'Mega Foods';
+
+Retrieve all columns from the payments table and only include the entries where the payee is Mega Foods.
+
+date	      payee	      amount	memo
+2016-05-15	Mega Foods	124.93	Groceries
+
+
+8. Given this users table, write SQL queries using the following criteria and include the output:
+
+The email and sign-up date for the user named DeAndre Data.
+
+SELECT email, signup
+FROM users
+WHERE name = 'DeAndre Data';
+
+email	            signup
+datad@comcast.net	2008-01-20
+
+The user ID for the user with email 'aleesia.algorithm@uw.edu'.
+
+SELECT userid
+FROM users
+WHERE email = 'aleesia.algorithm@uw.edu';
+
+userid
+1
+
+All the columns for the user ID equal to 4.
+
+SELECT *
+FROM users
+WHERE userid = 4;
+
+userid	name	          email	            signup
+4	      Brandy Boolean	bboolean@nasa.gov	1999-10-15
