@@ -1,0 +1,158 @@
+1. How do you find related data that is held in two separate data tables?
+
+You join the two tables with a key common two both tables.
+
+2. Explain, in your own words, the difference between a CROSS JOIN, INNER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN, and FULL OUTER JOIN. Give a real world example for each.
+
+CROSS JOIN: A cross join creates a row for every combination between table 1 and table 2. One example may be that you want to reassess staffing in a manufacturing plant where you would combine an employee table that contains their skill set with a table of the tasks in the manufacturing process.
+
+INNER JOIN: An inner join creates a row for every row in table 1 if there is a match in table 2 that satisfies the join condition. One example might be a company needs to do a recall on a product and wants to figure out how much remaining inventory it has. It can join the recall table with the inventory table using the product id.
+
+LEFT OUTER JOIN: A left outer join first performs an inner join. Then for every remaining row in table 1 that does not have a match in table 2, a row will be created with the table 2 value as null. I have a list of new freshmen students and I want to see who their homeroom teachers are. I could join using their homeroom teacher id and it will also show students who have not been assigned to homeroom yet.
+
+RIGHT OUTER JOIN: A right outer join first performs an inner join. Then for every remaining row in table 2 that does not have a match in table 1, a row will be created with the table 1 value as null. One example may be we have a list of employees and a column for medical insurance id which denotes the type of medical insurance plan they chose. By joining the employee table with the medical insurance table through a right outer join, we will see which insurances employees selected and it will highlight insurance plans that no one selected, which would be a good prompt to reassess the need of the insurance plan.
+
+FULL OUTER JOIN: A full outer join first performs an inner join. Then for every remaining row in table 1 that does not have a match in table 2, a row will be created with the table 2 value as null. Then for every remaining row in table 2 that does not have a match in table 1, a row will be created with the table 1 value as null. I have a table of students and a table of counselors. By joining the two using a full outer join, I can identify students that need to be assigned a counselor as well as counselors who do not have any students.
+
+3. Define primary key and foreign key. Give a real world example for each.
+
+A primary key is a unique identifier for an entry in a table. A foreign key is an identifier that can be used to join two tables together. An example would be we operate a store that sells one-of-a-kind products. If a customer reserves the product, we will update the product data to have the customer_id field to show the customer who reserved it. In the products table, the customer_id column contains the foreign key which in the customer table would be the primary key.
+
+4. Define aliasing.
+
+You can temporarily assign a table or column an alias to simplify the querying, because you instead reference the table or column using the alias as opposed to using the full name.
+
+5. Change this query so that you are using aliasing:
+
+Original:
+
+SELECT professor.name, compensation.salary, compensation.vacation_days
+FROM professor
+JOIN compensation
+ON professor.id = compensation.professor_id;
+
+With aliasing:
+
+SELECT p.name, c.salary, c.vacation_days
+FROM professor AS p
+JOIN compensation AS c
+ON p.id = c.professor_id;
+
+6. Why would you use a NATURAL JOIN? Give a real world example.
+A NATURAL JOIN compares the columns in common between the two tables and matches if all the shared column values are the same respectively. You will want to use a natural join typically if we are dealing with one-to-one relationships and it helps taking out the need to specify all the similar columns. One example may be a marketplace like Amazon. You could be buying from Amazon and selling through Amazon Marketplace. To find users that are both buyers and sellers, you could use a NATURAL JOIN and it will compare the similar fields such as name, address, phone number, email, etc.
+
+7. Using this Employee schema and data, write queries to find the following information:
+
+All employees with their shifts if they have any. Also include any unscheduled shifts.
+
+SELECT employees.name, shifts.date, shifts.start_time, shifts.end_time
+FROM scheduled_shifts
+JOIN employees
+ON scheduled_shifts.employee_id = employees.id
+RIGHT OUTER JOIN shifts
+ON scheduled_shifts.shift_id = shifts.id;
+
+8. Using this Adoption schema and data, please write queries to retrieve the following information and include the results:
+
+All volunteers. If the volunteer is fostering a dog, include each dog as well.
+
+SELECT volunteers.first_name, volunteers.last_name, dogs.name
+FROM volunteers
+LEFT OUTER JOIN dogs
+ON volunteers.foster_dog_id = dogs.id;
+
+The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
+
+SELECT cats.name, adopters.first_name, adopters.last_name, cat_adoptions.date
+FROM cat_adoptions
+JOIN cats
+ON cat_adoptions.cat_id = cats.id AND cat_adoptions.date > CURRENT_DATE - INTERVAL '30 DAYS'
+JOIN adopters
+ON cat_adoptions.adopter_id = adopters.id;
+
+
+Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
+
+SELECT adopters.first_name, adopters.last_name, dogs.name
+FROM dog_adoptions
+JOIN adopters
+ON dog_adoptions.adopter_id != adopters.id
+JOIN dogs
+ON dog_adoptions.dog_id != dogs.id;
+
+Lists of all cats and all dogs who have not been adopted.
+
+SELECT dogs.name
+FROM dogs
+FULL OUTER JOIN dog_adoptions
+ON dogs.id = dog_adoptions.dog_id
+WHERE dogs.id IS NULL OR dog_adoptions.dog_id IS NULL;
+
+SELECT cats.name
+FROM cats
+FULL OUTER JOIN cat_adoptions
+ON cats.id = cat_adoptions.cat_id
+WHERE cats.id IS NULL OR cat_adoptions.cat_id IS NULL;
+
+
+Volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all dogs who are not currently in foster homes.
+
+SELECT volunteers.first_name, volunteers.last_name, dogs.name
+FROM volunteers
+FULL OUTER JOIN dogs
+ON volunteers.foster_dog_id = dogs.id;
+
+
+The name of the person who adopted Rosco.
+
+SELECT adopters.first_name, adopters.last_name
+FROM dog_adoptions
+JOIN dogs
+ON dogs.name = 'Rosco'
+JOIN adopters
+ON dog_adoptions.adopter_id = adopters.id;
+
+9. Using this Library schema and data, write queries applying the following scenarios:
+
+To determine if the library should buy more copies of a given book, please provide the names and position, in order, of all of the patrons with a hold (request for a book with all copies checked out) on "Advanced Potion-Making".
+
+SELECT patrons.name, holds.rank
+FROM holds
+JOIN books
+ON holds.isbn = books.isbn AND books.title = 'Advanced Potion-Making'
+JOIN patrons
+ON holds.patron_id = patrons.id
+ORDER BY holds.rank;
+
+Make a list of all book titles and denote whether or not a copy of that book is checked out.
+
+SELECT books.title, transactions.checked_out_date
+FROM books
+LEFT OUTER JOIN transactions
+ON books.isbn = transactions.isbn AND transactions.checked_in_date IS NULL;
+
+
+In an effort to learn which books take longer to read, the librarians would like you to create a list of average checked out time by book name in the past month.
+
+SELECT books.title, AVG(transactions.checked_in_date - transactions.checked_out_date) AS average_checkout_time
+FROM books
+JOIN transactions
+ON books.isbn = transactions.isbn AND transactions.checked_out_date > CURRENT_DATE - INTERVAL '30 DAYS'
+GROUP BY books.isbn;
+
+In order to learn which items should be retired, make a list of all books that have not been checked out in the past 5 years.
+
+SELECT books.isbn, books.title, transactions.checked_out_date
+FROM books
+LEFT OUTER JOIN transactions
+ON books.isbn = transactions.isbn AND transactions.checked_out_date > CURRENT_DATE - INTERVAL '5 YEARS'
+WHERE transactions.checked_out_date IS NULL;
+
+List all of the library patrons. If they have one or more books checked out, correspond the books to the patrons.
+
+SELECT patrons.name, books.title
+FROM transactions
+JOIN books
+ON transactions.isbn = books.isbn
+RIGHT OUTER JOIN patrons
+ON patrons.id = transactions.patron_id AND transactions.checked_in_date IS NULL;
