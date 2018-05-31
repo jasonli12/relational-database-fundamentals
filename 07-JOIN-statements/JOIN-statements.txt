@@ -61,6 +61,15 @@ FROM volunteers
 LEFT OUTER JOIN dogs
 ON volunteers.foster_dog_id = dogs.id;
 
+RESULTS:
+
+first_name	last_name	name
+Rubeus	Hagrid	Munchkin
+Marjorie	Dursley	Marmaduke
+Sirius	Black	(null)
+Remus	Lupin	(null)
+Albus	Dumbledore	(null)
+
 The cat's name, adopter's name, and adopted date for each cat adopted within the past month to be displayed as part of the "Happy Tail" social media promotion which posts recent successful adoptions.
 
 SELECT cats.name, adopters.first_name, adopters.last_name, cat_adoptions.date
@@ -69,6 +78,12 @@ JOIN cats
 ON cat_adoptions.cat_id = cats.id AND cat_adoptions.date > CURRENT_DATE - INTERVAL '30 DAYS'
 JOIN adopters
 ON cat_adoptions.adopter_id = adopters.id;
+
+RESULTS:
+
+name	first_name	last_name	date
+Mushi	Arabella	Figg	2018-05-05
+Victoire	Argus	Filch	2018-05-10
 
 
 Adopters who have not yet chosen a dog to adopt and generate all possible combinations of adopters and available dogs.
@@ -80,6 +95,21 @@ ON dog_adoptions.adopter_id != adopters.id
 JOIN dogs
 ON dog_adoptions.dog_id != dogs.id;
 
+RESULTS:
+
+first_name	last_name	name
+Hermione	Granger	Boujee
+Hermione	Granger	Munchkin
+Hermione	Granger	Marley
+Hermione	Granger	Lassie
+Hermione	Granger	Marmaduke
+Arabella	Figg	Boujee
+Arabella	Figg	Munchkin
+Arabella	Figg	Marley
+Arabella	Figg	Lassie
+Arabella	Figg	Marmaduke
+
+
 Lists of all cats and all dogs who have not been adopted.
 
 SELECT dogs.name
@@ -88,11 +118,25 @@ FULL OUTER JOIN dog_adoptions
 ON dogs.id = dog_adoptions.dog_id
 WHERE dogs.id IS NULL OR dog_adoptions.dog_id IS NULL;
 
+RESULTS:
+
+name
+Munchkin
+Boujee
+Lassie
+Marley
+Marmaduke
+
 SELECT cats.name
 FROM cats
 FULL OUTER JOIN cat_adoptions
 ON cats.id = cat_adoptions.cat_id
 WHERE cats.id IS NULL OR cat_adoptions.cat_id IS NULL;
+
+RESULTS:
+name
+Seashell
+Nala
 
 
 Volunteers who are available to foster. If they currently are fostering a dog, include the dog. Also include all dogs who are not currently in foster homes.
@@ -101,6 +145,19 @@ SELECT volunteers.first_name, volunteers.last_name, dogs.name
 FROM volunteers
 FULL OUTER JOIN dogs
 ON volunteers.foster_dog_id = dogs.id;
+
+RESULTS:
+
+first_name	last_name	name
+(null)	(null)	Boujee
+Rubeus	Hagrid	Munchkin
+(null)	(null)	Marley
+(null)	(null)	Lassie
+Marjorie	Dursley	Marmaduke
+(null)	(null)	Rosco
+Sirius	Black	(null)
+Remus	Lupin	(null)
+Albus	Dumbledore	(null)
 
 
 The name of the person who adopted Rosco.
@@ -111,6 +168,11 @@ JOIN dogs
 ON dogs.name = 'Rosco'
 JOIN adopters
 ON dog_adoptions.adopter_id = adopters.id;
+
+RESULTS:
+
+first_name	last_name
+Argus	Filch
 
 9. Using this Library schema and data, write queries applying the following scenarios:
 
