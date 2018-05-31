@@ -1,0 +1,63 @@
+1. In your own words, explain the benefits of normalization. Include a real-world scenario where normalization is necessary.
+
+Normalization improves data integrity because it reduces the need to store duplicate data and instead breaks up data into multiple entities that are related to each other. Update errors are less likely to happen since we are removing the need to store duplicate pieces of data. Queries within an entity are quicker because there are less columns and data.
+
+A real-world scenario may be that we have an online merchant that gives customers the ability to create a wishlist of products that customers want. This data is valuable to determine trends and customer needs. If in our table, we have only one column for the wishlist and the wishlist can contain as many items a customer wants, we would benefit from using normalization. One immediate benefit would be making it easier to group and rank what are the top items customers are requesting for. These types of analytics would help determine strategic marketing and purchasing decisions.
+
+2. List and explain the different normal forms and how they relate to one another, with regard to your real-world scenario in the first question.
+
+First normal form (1NF) states that a column in a table cannot store multiple values in a field. Going back to our example, we had a wishlist where each customer can have multiple items in it. To switch to 1NF, we would have a record for each customer and wishlist item combination.
+
+Second normal form (2NF) requires 1NF to be true and non-key attributes cannot be dependent on a subset of the primary key because otherwise we are introducing duplicate data. Back to our example, if our table contained customer-specific information such as address, ethnicity, we would have multiple rows with the same address and ethnicity repeated in our 1NF scenario. To ensure we are meeting 2NF and not repeating data, we should break our table into two subtables, one table containing customer_id and wishlist and another containing customer_id and customer-specific information.
+
+Third normal form (3NF) requires 2NF to be true and cannot have any transitive functional dependencies of non-prime attributes. There is no reason to have columns that are indirectly related to the primary key. In our 2NF example for our customer specific table, we may have columns for country code and country name. This is considered a transitive functional dependency since country name depends on country code and country code depends on customer_id so you can transitively say country name depends on customer_id. To make this 3NF, we would only include the country code in the customer table and have a separate table that maps the country code to country name.
+
+Boyce Codd normal form (BCNF) requires 3NF to be true and super keys. Going back to our wishlist example, let's say our wishlist table had customer_id, wishlist, wishlist_product_category. Neither wishlist or customer_id are super keys because a customer may have multiple wishlist items and multiple customers may have the same item on their wishlist. What we would need to do then is create two separate subtables, one with the wishlist item and wishlist_product_category where the wishlist item is the super key and another with just the wishlist and customer_id and the set {customer_id, wishlist} is a super key.
+
+3. This student_records table contains students and their grades in different subjects. The schema is already in first normal form (1NF). Convert this schema to the third normal form (3NF) using the techniques you learned in this checkpoint.
+
+BEFORE (1NF):
+
+CREATE TABLE student_records (
+  id       INTEGER,
+  student_id     INTEGER,
+  student_email  VARCHAR(24),
+  student_name   VARCHAR(9),
+  professor_id   INTEGER,
+  professor_name VARCHAR(9),
+  subject        VARCHAR(11),
+  grade         VARCHAR(1)
+);
+
+AFTER (3NF):
+
+CREATE TABLE students (
+  student_id     INTEGER,
+  student_email  VARCHAR(24),
+  student_name   VARCHAR(9)
+);
+
+CREATE TABLE professors (
+  professor_id   INTEGER,
+  professor_name VARCHAR(9)
+);
+
+CREATE TABLE grades (
+  student_id INTEGER REFERENCES students,
+  professor_id INTEGER REFERENCES professors,
+  subject        VARCHAR(11),
+  grade         VARCHAR(1)
+)
+
+
+4. In your own words, explain the potential disadvantages of normalizing the data above. What are its trade-offs? Submit your findings in the submission table and discuss them with your mentor in your next session.
+
+Querying becomes more difficult as normalize more because the data is all spread out and contained in small tables. We get higher write performance though because we have less duplicate data to deal with at the cost of lower read performance because we will need to join data from different tables to perform complex queries. For example, if I want to see how many A's, B's, C's through F's that a professor gave out, I would need to join the professors and grades table. The grades table tells me how many grades a professor_id gave out, but the professor_id is not a human-identifiable indicator. We need to look at the professors table to see who that professor_id references or vice versa.
+
+5. Looking at the tables you have normalized. If you need to denormalize to improve query performance or speed up reporting, how would you carry out denormalization for this database design? Submit potential strategies in the submission tab and discuss them with your mentor in your next session.
+
+Going back to my wishlist example, to denormalize it, I may decide to combine the tables and store customer data and wishlist items in the same table. This way if we ran queries like, top wishlist items by customer geographic location, we can quickly do so without joining different tables together. We will still have a customer data that will store other information that is not directly relevant to the type of querying we would so with wishlist items, such as billing information. We are employing redundant groups of data, but the benefit is quick read performance since the relevant pieces of data for querying are localized into one table.
+
+6. Explore the trade-offs between data normalization and denormalization in this scenario, submit your findings in the submission tab, and discuss them with your mentor in your next session.
+
+Data normalization offers many benefits such as data integrity and faster write performance because by separating data into different smaller tables, we reduce the number of times a single piece of data needs to be stored. As a result, there are lesser places that need to be updated when that data changes. The tradeoff though is that because the data is so segregated, the more complex queries that we want to employ, the more likely we will have more joins which in turn causes slower read performance. Denormalization is like the opposite of normalization. Instead of breaking up data into smaller tables and connecting them together, the same data could be stored in multiple tables. The benefit of this is that we have a lesser need to join tables because the data is more readily available locally. The tradeoff though is data integrity and slower write performance, because of all the updates that need to happen across different tables that contain the same piece of data to ensure the data is still the same.
