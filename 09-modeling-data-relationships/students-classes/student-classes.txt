@@ -1,0 +1,65 @@
+Design a data model for students and the classes they have taken. The model should include the students' grades for a given class.
+Work through the questions from the example above.
+Document any assumptions you make about what data should be stored, what data types should be used, etc., and include them in a text file.
+Ask questions of your mentor in your next session if you are unsure about parts of your model.
+Draw the model using the notation used in the checkpoint and submit a picture. You can also use a tool like StarUML or quickdatabasediagrams.com if you choose.
+
+What classes/entites do we need to model?
+
+We need to store student and class information and have a grades entity to hold student grades per class per student.
+
+What fields/attributes will each entity need?
+For students, we will need the student id, first name, last name.
+For classes, we will need class id and class name.
+For grades, we will have the student_id, class_id and letter grade earned.
+
+What data types do we need to use? / How should those relationships be represented in tables?
+
+For student id and class id we will use integers. For first name and last name, we can use varchar and for class name, we can use text. For grade, we will use a varchar.
+
+What relationships exist between entities?
+A student may take many classes and a class may have many students. Since a many to many relationship will not allow us to create foreign keys to link the tables together, we have a grades entity that links to both the students and classes entities. The grades entity will also store the letter grades.
+
+Model URL: https://docs.google.com/document/d/11sBYchEdqYK5x4IgtdUEwYPabVTlmG5Aj0XYtYGCn5o/edit
+
+
+Build a database for the students/classes data model. Create a SQL file that creates the tables and inserts sample data (the questions below will help you create the data). Write queries for the following data:
+
+All students who have taken a particular class.
+SELECT classes.class_id, classes.class_name, students.first_name, students.last_name
+FROM grades
+JOIN students
+ON grades.student_id = students.student_id
+JOIN classes
+ON grades.class_id = classes.class_id
+ORDER BY classes.class_id, students.first_name, students.last_name;
+
+
+
+The number of each grade (using letter grades A-F) earned in a particular class.
+
+SELECT classes.class_id, classes.class_name, grades.grade, COUNT (grades.grade)
+FROM grades
+JOIN classes
+ON grades.class_id = classes.class_id
+GROUP BY classes.class_id, grades.grade
+ORDER BY classes.class_id, grades.grade;
+
+
+Class names and the total number of students who have taken each class in the list.
+
+SELECT classes.class_id, classes.class_name, COUNT(grades.student_id)
+FROM grades
+JOIN classes
+ON grades.class_id = classes.class_id
+GROUP BY classes.class_id
+ORDER BY classes.class_id;
+
+The class taken by the largest number of students.
+SELECT classes.class_id, classes.class_name, COUNT(grades.student_id)
+FROM grades
+JOIN classes
+ON grades.class_id = classes.class_id
+GROUP BY classes.class_id
+ORDER BY COUNT(grades.student_id) DESC
+LIMIT 1;
